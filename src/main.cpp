@@ -8,10 +8,10 @@ const unsigned int height = 800;
 // Vertices coordinates
 Vertex vertices[] =
 { //               COORDINATES           /            COLORS          /           NORMALS         /       TEXTURE COORDINATES    //
-	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
-	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)}
+	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
 };
 
 // Indices for vertices order
@@ -84,7 +84,7 @@ int main()
 	// Texture data
 	Texture textures[]
 	{
-		Texture("../resources/textures/pop_cat.png", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+		Texture("../resources/textures/planks.png", "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
 		Texture("../resources/textures/planksSpec.png", "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
 	};
 
@@ -143,11 +143,6 @@ int main()
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
-
-	// 	// Backface culling setup
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_FRONT);
-    // glFrontFace(GL_CCW);
 
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));

@@ -10,6 +10,7 @@ target_include_directories(glad PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/external/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/include/KHR
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/json
 
 )
 # Fetch GLFW

@@ -44,8 +44,39 @@ void Model::loadMesh(unsigned int indMesh)
 	std::vector<GLuint> indices = getIndices(JSON["accessors"][indAccInd]);
 	std::vector<Texture> textures = getTextures();
 
-	// Combine the vertices, indices, and textures into a mesh
-	meshes.push_back(Mesh(vertices, indices, textures));
+	glm::vec3 minVertex = findMinVertex(vertices); 	//calculates the minimum vertex so that we can do calculation of the voxel soze etc
+	glm::vec3 maxVertex = findMaxVertex(vertices);
+
+	glm::vec3 size = maxVertex - minVertex;
+
+	float voxelSize = 0.01f;
+
+	// Number of voxels in each dimension
+	std::vector<Vertex> voxelVertices;
+    std::vector<GLuint> voxelIndices;
+
+	int voxX = ceil(size.x / voxelSize);
+	int voxY = ceil(size.y / voxelSize);
+	int voxZ = ceil(size.z / voxelSize);
+
+	std::cout<<"x"<<voxX<<"y"<<voxY<<"z"<<voxZ;
+	for (int x = 0; x < voxX; x++)
+	for (int y = 0; y < voxY; y++)
+
+	for (int z = 0; z < voxZ; z++)
+	{
+		glm::vec3 voxelPos = minVertex + glm::vec3(x, y, z) * voxelSize;
+
+		if (triangleIntersectsVoxel(vertices, indices, voxelPos, voxelSize))
+		{
+			addCube(voxelPos, voxelVertices, voxelIndices, voxelSize);
+			
+		}
+	}
+
+
+
+	meshes.push_back(Mesh(voxelVertices, voxelIndices, textures));
 }
 
 void Model::traverseNode(unsigned int nextNode, glm::mat4 matrix)
@@ -349,4 +380,112 @@ std::vector<glm::vec4> Model::groupFloatsVec4(std::vector<float> floatVec)
 		}
 	}
 	return vectors;
+}
+
+glm::vec3 findMinVertex(const std::vector<Vertex> vertices)
+{
+
+    glm::vec3 minV(
+        std::numeric_limits<float>::max(),
+        std::numeric_limits<float>::max(),
+        std::numeric_limits<float>::max()
+    );
+
+    for (const auto& v : vertices)
+    {
+        if (v.position.x < minV.x) minV.x = v.position.x;
+        if (v.position.y < minV.y) minV.y = v.position.y;
+        if (v.position.z < minV.z) minV.z = v.position.z;
+    }
+
+    return minV;
+}
+
+glm::vec3 findMaxVertex(const std::vector<Vertex> vertices)
+{
+
+    glm::vec3 maxV(
+        std::numeric_limits<float>::min(),
+        std::numeric_limits<float>::min(),
+        std::numeric_limits<float>::min()
+    );
+
+    for (const auto& v : vertices)
+    {
+        if (v.position.x > maxV.x) maxV.x = v.position.x;
+        if (v.position.y > maxV.y) maxV.y = v.position.y;
+        if (v.position.z > maxV.z) maxV.z = v.position.z;
+    }
+
+    return maxV;
+}
+
+
+bool triangleIntersectsVoxel(
+    const std::vector<Vertex>& vertices,
+    const std::vector<GLuint>& indices,
+    const glm::vec3& voxelPos,
+    float voxelSize
+) {
+    glm::vec3 voxelMax = voxelPos + glm::vec3(voxelSize);
+
+    for (size_t i = 0; i < indices.size(); i += 3) {
+        glm::vec3 v0 = vertices[indices[i + 0]].position;
+        glm::vec3 v1 = vertices[indices[i + 1]].position;
+        glm::vec3 v2 = vertices[indices[i + 2]].position;
+
+        glm::vec3 triMin(
+            std::min({v0.x, v1.x, v2.x}),
+            std::min({v0.y, v1.y, v2.y}),
+            std::min({v0.z, v1.z, v2.z})
+        );
+
+        glm::vec3 triMax(
+            std::max({v0.x, v1.x, v2.x}),
+            std::max({v0.y, v1.y, v2.y}),
+            std::max({v0.z, v1.z, v2.z})
+        );
+
+        // AABB overlap test
+        if ((triMax.x >= voxelPos.x && triMin.x <= voxelMax.x) &&
+            (triMax.y >= voxelPos.y && triMin.y <= voxelMax.y) &&
+            (triMax.z >= voxelPos.z && triMin.z <= voxelMax.z)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void addCube(
+    const glm::vec3& voxelPos,
+    std::vector<Vertex>& voxelVertices,
+    std::vector<GLuint>& voxelIndices,
+    float voxelSize
+) {
+    glm::vec3 corners[8] = {
+        voxelPos,
+        voxelPos + glm::vec3(voxelSize, 0, 0),
+        voxelPos + glm::vec3(voxelSize, voxelSize, 0),
+        voxelPos + glm::vec3(0, voxelSize, 0),
+        voxelPos + glm::vec3(0, 0, voxelSize),
+        voxelPos + glm::vec3(voxelSize, 0, voxelSize),
+        voxelPos + glm::vec3(voxelSize, voxelSize, voxelSize),
+        voxelPos + glm::vec3(0, voxelSize, voxelSize)
+    };
+    GLuint cubeInds[36] = {
+        0,1,2, 2,3,0, // front
+        1,5,6, 6,2,1, // right
+        5,4,7, 7,6,5, // back
+        4,0,3, 3,7,4, // left
+        3,2,6, 6,7,3, // top
+        4,5,1, 1,0,4  // bottom
+    };
+    GLuint baseIndex = voxelVertices.size();
+    for (int i = 0; i < 8; i++){
+        voxelVertices.push_back(Vertex{ corners[i], glm::vec3(0,0,1), glm::vec3(1,1,1), glm::vec2(0,0) });
+	}
+
+    for (int i = 0; i < 36; i++){
+        voxelIndices.push_back(baseIndex + cubeInds[i]);
+	}
 }

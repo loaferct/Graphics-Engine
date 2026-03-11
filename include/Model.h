@@ -58,4 +58,19 @@ private:
 	std::vector<glm::vec3> groupFloatsVec3(std::vector<float> floatVec);
 	std::vector<glm::vec4> groupFloatsVec4(std::vector<float> floatVec);
 };
+
+glm::vec3 findMinVertex(const std::vector<Vertex> vertices);
+glm::vec3 findMaxVertex(const std::vector<Vertex> vertices);
+void addCube(
+    const glm::vec3& voxelPos,
+    std::vector<Vertex>& voxelVertices,
+    std::vector<GLuint>& voxelIndices,
+    float voxelSize
+);
+bool triangleIntersectsVoxel(
+    const std::vector<Vertex>& vertices,
+    const std::vector<GLuint>& indices,
+    const glm::vec3& voxelPos,
+    float voxelSize
+);
 #endif

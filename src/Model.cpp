@@ -51,32 +51,32 @@ void Model::loadMesh(unsigned int indMesh)
 
 	float voxelSize = 0.01f;
 
-	// Number of voxels in each dimension
-	std::vector<Vertex> voxelVertices;
-    std::vector<GLuint> voxelIndices;
+	// // Number of voxels in each dimension
+	// std::vector<Vertex> voxelVertices;
+    // std::vector<GLuint> voxelIndices;
 
-	int voxX = ceil(size.x / voxelSize);
-	int voxY = ceil(size.y / voxelSize);
-	int voxZ = ceil(size.z / voxelSize);
+	// int voxX = ceil(size.x / voxelSize);
+	// int voxY = ceil(size.y / voxelSize);
+	// int voxZ = ceil(size.z / voxelSize);
 
-	std::cout<<"x"<<voxX<<"y"<<voxY<<"z"<<voxZ;
-	for (int x = 0; x < voxX; x++)
-	for (int y = 0; y < voxY; y++)
+	// std::cout<<"x"<<voxX<<"y"<<voxY<<"z"<<voxZ;
+	// for (int x = 0; x < voxX; x++)
+	// for (int y = 0; y < voxY; y++)
 
-	for (int z = 0; z < voxZ; z++)
-	{
-		glm::vec3 voxelPos = minVertex + glm::vec3(x, y, z) * voxelSize;
+	// for (int z = 0; z < voxZ; z++)
+	// {
+	// 	glm::vec3 voxelPos = minVertex + glm::vec3(x, y, z) * voxelSize;
 
-		if (triangleIntersectsVoxel(vertices, indices, voxelPos, voxelSize))
-		{
-			addCube(voxelPos, voxelVertices, voxelIndices, voxelSize);
+	// 	if (triangleIntersectsVoxel(vertices, indices, voxelPos, voxelSize))
+	// 	{
+	// 		addCube(voxelPos, voxelVertices, voxelIndices, voxelSize);
 			
-		}
-	}
+	// 	}
+	// }
 
 
 
-	meshes.push_back(Mesh(voxelVertices, voxelIndices, textures));
+	meshes.push_back(Mesh(vertices, indices, textures));
 }
 
 void Model::traverseNode(unsigned int nextNode, glm::mat4 matrix)
